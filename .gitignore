@@ -1,2 +1,3 @@
-files/raw
-files/extracted/
+files/raw/**
+files/extracted/**
+README.md.bak

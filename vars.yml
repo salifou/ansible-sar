@@ -1,0 +1,7 @@
+---
+
+org: ean
+
+repos:
+- {spotter_uuid: vpXazlQuQtKXJ96GP29dlg, file: ean-awx-config.tar.gz, scm_url: ean-awx-config_url}
+- {spotter_uuid: SIjrGQDvSda0be7lXnf--Q, file: ean-db-migration.tar.gz , scm_url: ean-db-migration_url}
