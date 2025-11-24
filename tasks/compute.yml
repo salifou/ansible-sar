@@ -1,0 +1,58 @@
+---
+###
+# Compute the list
+#  - __missing_list:  List of repositories missing archive (tar ball)
+#  - __skip_list:     List of repositories containing multiple top level folders (SKIPPED)
+#  - __process_list:  List of repositories to be process
+#
+# TODO:
+# - Handle duplicates due to extracting to an existing repo.
+#   unarcharive will fail for now
+
+- name: Find the archive - {{ repo.name }}
+  ansible.builtin.find:
+    recurse: false
+    file_type: "file"
+    paths: "{{ __archive_dir }}"
+    patterns:
+      - "{{ repo.name }}.tar"
+      - "{{ repo.name }}.tgz"
+      - "{{ repo.name }}.tar.gz"
+    use_regex: false
+  register: __archive
+
+- name: Get top level folders in the archive - {{ repo.name }} # noqa: command-instead-of-module
+  when: __archive is defined and __archive.matched == 1
+  ansible.builtin.shell: tar --exclude="*/*" -tf {{ __archive.files[0].path }}
+  register: __nb_repos
+  changed_when: false
+
+- name: Assert that repo name in archive as expected
+  when:
+    - __archive is defined and __archive.matched == 1
+    - __nb_repos is defined and __nb_repos.stdout_lines | length == 1
+  ansible.builtin.assert:
+    that: repo.name + '/' == __nb_repos.stdout or repo.name == __nb_repos.stdout
+    fail_msg: "Bad archive structure. Expected: {{ repo.name }}, Found: {{ __nb_repos.stdout }}"
+    quiet: true
+
+# Process only tar ball containing a single top level folder.
+# dest is the folder name in the archive, can be different from repo,name in CSV.
+- name: Add to process list - {{ repo.name }}
+  when:
+    - __archive is defined and __archive.matched == 1
+    - __nb_repos is defined and __nb_repos.stdout_lines | length == 1
+  ansible.builtin.set_fact:
+    __process_list: "{{ __process_list + [{'uuid': repo.uuid | trim, 'name': repo.name, 'archive': __archive.files[0].path}] }}"
+
+- name: Add to skip list - {{ repo.name }}
+  when:
+    - __archive is defined and __archive.matched == 1
+    - __nb_repos is defined and __nb_repos.stdout_lines | length > 1
+  ansible.builtin.set_fact:
+    __skip_list: "{{ __skip_list + [__archive.files[0].path] }}"
+
+- name: Add to missing list - {{ repo.name }}
+  when: __archive is undefined or __archive.matched != 1
+  ansible.builtin.set_fact:
+    __missing_list: "{{ __missing_list + [repo.name] }}"
