@@ -1,2 +1,6 @@
-files/raw
-files/extracted/
+files/raw/**
+files/extracted/**
+README.md.bak
+filter_plugins/__pycache__
+out/
+collections/ansible_collections

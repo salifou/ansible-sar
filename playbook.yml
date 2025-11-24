@@ -1,0 +1,27 @@
+---
+- name: Extract all files
+  hosts: localhost
+  gather_facts: true
+  environment:
+    SPOTTER_ENDPOINT: '{{ lookup("env", "SPOTTER_ENDPOINT") }}'
+    SPOTTER_TOKEN: '{{ lookup("env", "SPOTTER_TOKEN") | default("invalid_token") }}'
+    SPOTTER_INSECURE: '{{ lookup("env", "SPOTTER_INSECURE") | default(true, true) | bool }}'
+  tasks:
+
+    - name: Validation
+      ansible.builtin.include_tasks: ./tasks/validation.yml
+
+    - name: Check and compute facts
+      ansible.builtin.include_tasks: ./tasks/facts.yml
+
+    - name: Process each repo
+      ansible.builtin.include_tasks:
+        file: ./tasks/process.yml
+      loop: "{{ __process_list }}"
+      loop_control:
+        label: "{{ repo.name }}"
+        loop_var: repo
+
+    - name: Summarize
+      ansible.builtin.include_tasks:
+        file: ./tasks/summary.yml

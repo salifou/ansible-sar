@@ -1,0 +1,29 @@
+- name: Facts - Read CSV file
+  community.general.read_csv:
+    path: "{{ csv }}"
+  register: __repos
+
+- name: Facts - Initialize lists
+  ansible.builtin.set_fact:
+    __missing_list: []    # Repo missing archive
+    __skip_list: []       # Archive contain multiple folders
+    __process_list: []    # Processable
+    __duplicates: "{{ __repos.list | selectattr('name', 'defined') | map(attribute='name') | map('trim') | duplicates }}"
+
+- name: Facts - Fail if an empty repo name is found
+  ansible.builtin.assert:
+    that: __repos.list | selectattr('name', 'match', '^\s*$') | length == 0
+    fail_msg: "Found at least one raw where repo name is blank"
+
+- name: Facts - Fail if a duplicated repo name is found
+  ansible.builtin.assert:
+    that: __duplicates | length == 0
+    fail_msg: "Found duplicated repo name: {{ __duplicates }}"
+
+- name: Facts - Compute list
+  ansible.builtin.include_tasks:
+    file: ./compute.yml
+  loop: "{{ __repos.list | selectattr('uuid', 'defined') | list }}" # Exclude repo without Spotter project UUID
+  loop_control:
+    label: "{{ repo.name }}"
+    loop_var: repo
