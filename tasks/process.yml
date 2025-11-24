@@ -1,0 +1,37 @@
+---
+# Process a repo, extract, scan, rewrite, scan and save the result
+
+- name: Process - Extract {{ repo.name }}
+  when: __archive is defined and __archive.matched == 1
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "{{ repo.archive }}"
+    dest: "{{ __extracted_dir }}"
+    owner: "{{ ansible_env.USER }}"  # Set ownership to avoid permission issues
+    mode: '0755'
+
+- name: Process - Scan and rewrite {{ repo.name }}
+  ansible.builtin.shell:
+    cmd: >
+      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }}
+    chdir: "{{ __extracted_dir }}"
+  changed_when: false
+  failed_when: false
+  tags: spotter
+
+- name: Process - Re-scan after rewriting {{ repo.name }}
+  ansible.builtin.command:
+    cmd: spotter scan -a 2.16 --project-id {{ repo.uuid }} {{ repo.name }}
+    chdir: "{{ __extracted_dir }}"
+  changed_when: false
+  failed_when: false
+  register: _scan_result
+  tags: spotter
+
+- name: Process - Save scan result {{ repo.name }}
+  ansible.builtin.copy:
+    content: "{{ _scan_result.stdout }}"
+    dest: "{{ __extracted_dir }}/{{ repo.name }}/___spotter-report___.txt"
+    force: true
+    mode: "0444"
+  tags: spotter

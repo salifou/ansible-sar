@@ -1,35 +1,27 @@
 ---
 - name: Extract all files
   hosts: localhost
-  vars_files: vars.yml
   gather_facts: true
   environment:
     SPOTTER_ENDPOINT: '{{ lookup("env", "SPOTTER_ENDPOINT") }}'
     SPOTTER_TOKEN: '{{ lookup("env", "SPOTTER_TOKEN") | default("invalid_token") }}'
     SPOTTER_INSECURE: '{{ lookup("env", "SPOTTER_INSECURE") | default(true, true) | bool }}'
   tasks:
-    - name: Check connectivity
-      ansible.builtin.command: spotter login
-      changed_when: false
 
-    - name: Create folders
-      ansible.builtin.file:
-        path: "{{ playbook_dir }}/files/{{ item }}/{{ org }}"
-        mode: "0775"
-        state: directory
-      loop:
-        - raw
-        - extracted
+    - name: Validation
+      ansible.builtin.include_tasks: ./tasks/validation.yml
 
-    - name: Extract projects
-      ansible.builtin.unarchive:
-        src: "{{ playbook_dir }}/files/raw/{{ org }}/{{ item.file }}"
-        dest: "{{ playbook_dir }}/files/extracted/{{ org }}"
-      loop: "{{ repos }}"
+    - name: Check and compute facts
+      ansible.builtin.include_tasks: ./tasks/facts.yml
 
-    - name: Include scan tasks
+    - name: Process each repo
       ansible.builtin.include_tasks:
-        file: ./tasks/scan.yml
-      loop: "{{ repos }}"
+        file: ./tasks/process.yml
+      loop: "{{ __process_list }}"
       loop_control:
-        loop_var: project
+        label: "{{ repo.name }}"
+        loop_var: repo
+
+    - name: Summarize
+      ansible.builtin.include_tasks:
+        file: ./tasks/summary.yml

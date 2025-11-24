@@ -1,0 +1,74 @@
+---
+- name: Check spotter connectivity
+  ansible.builtin.command: spotter login
+  changed_when: false
+  tags: spotter
+
+- name: Validation - Check if working_dir variable is defined
+  ansible.builtin.assert:
+    that: working_dir is defined
+    fail_msg: "working_dir variable is not provided"
+    quiet: true
+
+- name: Validation - Check if csv variable is defined
+  ansible.builtin.assert:
+    that: csv is defined
+    fail_msg: "csv variables is not provided"
+    quiet: true
+
+- name: Validation - Stat the working directory
+  ansible.builtin.stat:
+    path: "{{ working_dir }}"
+  register: __working_dir
+
+- name: Validation - Check if working_dir directory exists
+  ansible.builtin.assert:
+    that:
+      - __working_dir.stat.exists
+      - __working_dir.stat.isdir
+    fail_msg: "Working directory {{ working_dir }} does not exist"
+    quiet: true
+
+- name: Validation - Stat the CSV file
+  ansible.builtin.stat:
+    path: "{{ csv }}"
+  register: __csv
+
+- name: Validation - Check if CSV file exists
+  ansible.builtin.assert:
+    that:
+      - __csv.stat.exists
+      - __csv.stat.isreg
+    fail_msg: "CSV file {{ csv }} does not exist"
+    quiet: true
+
+- name: Validation - Set __archive_dir and __extracted_dir facts
+  ansible.builtin.set_fact:
+    __archive_dir: "{{ working_dir }}/archives/{{ csv | basename | replace('.csv', '') }}"
+    __extracted_dir: "{{ working_dir }}/extracted/{{ csv | basename | replace('.csv', '') }}"
+
+- name: Validation - Stat the archive directory
+  ansible.builtin.stat:
+    path: "{{ __archive_dir }}"
+  register: __archive_dir_cmd
+
+- name: Validation - Check if archive directory exists
+  ansible.builtin.assert:
+    that:
+      - __archive_dir_cmd.stat.exists
+      - __archive_dir_cmd.stat.isdir
+    fail_msg: "Archive directory {{ __archive_dir }} does not exist"
+    quiet: true
+
+# TODO: FIXME - Needed for dev. unarchive fails if folder exists
+- name: Remove __extracted_dir folder
+  ansible.builtin.file:
+    path: "{{ __extracted_dir }}"
+    state: absent
+  become: true
+
+- name: Create __extracted_dir folder
+  ansible.builtin.file:
+    path: "{{ __extracted_dir }}"
+    state: directory
+    mode: '0755'
