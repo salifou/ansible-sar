@@ -42,8 +42,17 @@
   when:
     - __archive is defined and __archive.matched == 1
     - __nb_repos is defined and __nb_repos.stdout_lines | length == 1
+    - repo.uuid | trim != ""
   ansible.builtin.set_fact:
     __process_list: "{{ __process_list + [{'uuid': repo.uuid | trim, 'name': repo.name, 'archive': __archive.files[0].path}] }}"
+
+- name: Add to empty list - {{ repo.name }}
+  when:
+    - __archive is defined and __archive.matched == 1
+    - __nb_repos is defined and __nb_repos.stdout_lines | length == 1
+    - repo.uuid | trim == ""
+  ansible.builtin.set_fact:
+    __empty_uuid_list: "{{ __empty_uuid_list + [{'uuid': repo.uuid | trim, 'name': repo.name, 'archive': __archive.files[0].path}] }}"
 
 - name: Add to skip list - {{ repo.name }}
   when:
