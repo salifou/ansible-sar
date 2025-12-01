@@ -6,7 +6,7 @@ The playbook expects the following variables:
 - `working_dir` the working directory
 - `csv` the CSV file
 
-The tarball archives for each CSV file should be placed in a folder named after the CSV file (without the extension) under `$WORKING_DIR/archives/` folder.
+The archives (tarballs) for each CSV file should be placed in a folder named after the CSV file (without the extension) under `$WORKING_DIR/archives/` folder.
 
 Example
 
@@ -26,12 +26,13 @@ The playbook will:
 - Validate the inputs
 - Compute the following
     - list of repos that can be processed
+    - list of repos missing spotter project uuid
     - list of repos missing the archive (tar ball)
     - list of repos with multiple top level directories (skipped)
-- Delete and re-create the extracted folder if needed
+- Delete and re-create the extracted folder
 - Process each repo
     - Extract the archive in `$WORKING_DIR/extracted/<CSV FILE NAME WITHOUT EXTENSION>`
-    - Scan and rewrite the repo
+    - Scan and rewrite the repo 5 times
     - Re-scan after rewriting
     - Save the scan result in the `___spotter-report___.txt` file located in the extracted repo.
 - Print a summary (processed, skipped, etc.)
@@ -83,3 +84,18 @@ ansible-playbook playbook.yml --extra-vars "working_dir=$WORKING_DIR csv=$WORKIN
 Notes:
 - `--ask-become-pass` is needed to delete extracted files if needed
 - `--skip-tags spotter` can be used to skip spotter related tasks.
+
+## Workflow
+
+1. Create a Spotter organization(e.g., per RH case or AWX/AAP organization).
+2. Create Spotter projects within the organization
+3. Create a spreadsheet including the repository names and the Spotter project UUIDs.
+4. Create the working directory and download the repository archives (tar balls).
+5. Run the playbook, specifying the working directory and the spreadsheet (CSV).
+6. Manually address problematic repositories, specifically:
+	- Unexpected archive (tarball) name.
+		- Expected tarball name `<name in CSV>.{tar, tgz, tar.gz}`
+		- See missing archives in playbook summary.
+	- Duplicated repository names in the spreadsheet.
+	- Archives including multiple folders or mismatching names.
+7. Compress the output and send it to the customer.
