@@ -10,10 +10,12 @@
     owner: "{{ ansible_env.USER }}"  # Set ownership to avoid permission issues
     mode: '0755'
 
-# rewrite 3 times
+# rewrite 5 times
 - name: Process - Scan and rewrite {{ repo.name }}
   ansible.builtin.shell:
     cmd: >
+      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
+      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
       spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
       spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
       spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
