@@ -5,6 +5,7 @@
 
 - name: Facts - Initialize lists
   ansible.builtin.set_fact:
+    __empty_uuid_list: [] # Repo missing spotter project uuid
     __missing_list: []    # Repo missing archive
     __skip_list: []       # Archive contain multiple folders
     __process_list: []    # Processable

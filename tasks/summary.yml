@@ -10,6 +10,11 @@
         - {{ item }}
       {% endfor %}
 
+      Missing UUID:
+      {% for item in __empty_uuid_list %}
+        - {{ item }}
+      {% endfor %}
+
       Multiple Top Folders in Archive (skip):
       {% for item in __skip_list %}
         - {{ item }}
@@ -20,6 +25,12 @@
         - {{ item }}
       {% endfor %}
 
-      Total: {{ __process_list | length +  __skip_list | length + __missing_list | length }} =
-        {{ __process_list | length }} (process) + {{ __skip_list | length
-        }} (skip) + {{ __missing_list | length }} (missing)
+      Total: {{ 
+      __process_list | length 
+      +  __skip_list | length 
+      + __missing_list | length 
+      + __empty_uuid_list | length 
+      }} = {{ __process_list | length }} (processed) + {{ 
+      __skip_list | length }} (skipped) + {{ 
+      __missing_list | length }} (tarball missing) + {{ 
+      __empty_uuid_list | length }} (empty uuid)
