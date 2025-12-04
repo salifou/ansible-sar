@@ -18,12 +18,13 @@
       - "{{ repo.name }}.tar"
       - "{{ repo.name }}.tgz"
       - "{{ repo.name }}.tar.gz"
+      - "{{ repo.name }}.zip"
     use_regex: false
   register: __archive
 
 - name: Get top level folders in the archive - {{ repo.name }} # noqa: command-instead-of-module
   when: __archive is defined and __archive.matched == 1
-  ansible.builtin.shell: tar --exclude="*/*" -tf {{ __archive.files[0].path }}
+  ansible.builtin.shell: tar --exclude="*/*" -tf {{ __archive.files[0].path }} || zipinfo -1 {{ __archive.files[0].path }} | head -n 1
   register: __nb_repos
   changed_when: false
 
