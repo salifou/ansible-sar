@@ -81,9 +81,16 @@ export SPOTTER_TOKEN=...
 ansible-playbook playbook.yml --extra-vars "working_dir=$WORKING_DIR csv=$WORKING_DIR/raw.csv" --ask-become-pass
 ```
 
-Notes:
+**Playbook Variables**
+- `ansible_core_version`: Ansible core version to scan against. Default: "2.16"
+- `rewrite_count`: Spotter rewrite count. Default: 5
+- `spotter_extra_flags='--profile full'`: Additional flags to `spotter scan` command. Default: ""
+
+**Notes**
 - `--ask-become-pass` is needed to delete extracted files if needed
 - `--skip-tags spotter` can be used to skip spotter related tasks.
+
+
 
 ## Workflow
 
