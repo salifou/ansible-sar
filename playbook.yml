@@ -2,6 +2,10 @@
 - name: Extract all files
   hosts: localhost
   gather_facts: true
+  vars:
+    ansible_core_version: "2.16"
+    rewrite_count: 5
+    spotter_extra_flags: "" # e.g "--profile full"
   environment:
     SPOTTER_ENDPOINT: '{{ lookup("env", "SPOTTER_ENDPOINT") }}'
     SPOTTER_TOKEN: '{{ lookup("env", "SPOTTER_TOKEN") | default("invalid_token") }}'

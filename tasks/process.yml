@@ -14,19 +14,16 @@
 - name: Process - Scan and rewrite {{ repo.name }}
   ansible.builtin.shell:
     cmd: >
-      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
-      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
-      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
-      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
-      spotter scan -a 2.16 --rewrite --project-id {{ repo.uuid }} {{ repo.name }};
+      spotter scan -a {{ ansible_core_version }} {{ spotter_extra_flags }} --rewrite --project-id {{ repo.uuid }} {{ repo.name }}
     chdir: "{{ __extracted_dir }}"
   changed_when: false
   failed_when: false
+  loop: "{{ range(0, rewrite_count) | list }}"
   tags: spotter
 
 - name: Process - Re-scan after rewriting {{ repo.name }}
   ansible.builtin.command:
-    cmd: spotter scan -a 2.16 --project-id {{ repo.uuid }} {{ repo.name }}
+    cmd: spotter scan -a {{ ansible_core_version }} {{ spotter_extra_flags }} --project-id {{ repo.uuid }} {{ repo.name }}
     chdir: "{{ __extracted_dir }}"
   changed_when: false
   failed_when: false
