@@ -33,6 +33,35 @@
 - name: Process - Save scan result {{ repo.name }}
   ansible.builtin.copy:
     content: "{{ _scan_result.stdout }}"
+    dest: "{{ __extracted_dir }}/{{ repo.name }}/___spotter-report_aws___.txt"
+    force: true
+    mode: "0444"
+  tags: spotter
+
+
+# Find
+# - https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/check-catalogue/
+# - https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/plugin-docs/
+# Replace with
+# - https://spotter.steampunk.si/check-catalogue/
+# - https://spotter.steampunk.si/plugin-docs/
+- name: Process - Save scan result 2 {{ repo.name }}
+  ansible.builtin.copy:
+    content: >
+      {{ _scan_result.stdout
+        | replace(
+          'https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/check-catalogue/',
+          'https://spotter.steampunk.si/check-catalogue/')
+        | replace(
+          'https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/plugin-docs/',
+          'https://spotter.steampunk.si/plugin-docs/')
+      }}
+    # content: >
+    #   {{ _scan_result.stdout
+    #     | replace(
+    #       'https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/check-catalogue/',
+    #       'https://spotter.steampunk.si/check-catalogue/')
+    #   }}
     dest: "{{ __extracted_dir }}/{{ repo.name }}/___spotter-report___.txt"
     force: true
     mode: "0444"
