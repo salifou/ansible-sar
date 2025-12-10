@@ -10,7 +10,6 @@
     owner: "{{ ansible_env.USER }}"  # Set ownership to avoid permission issues
     mode: '0755'
 
-# rewrite 5 times
 - name: Process - Scan and rewrite {{ repo.name }}
   ansible.builtin.shell:
     cmd: >
@@ -38,30 +37,15 @@
     mode: "0444"
   tags: spotter
 
-
-# Find
-# - https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/check-catalogue/
-# - https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/plugin-docs/
-# Replace with
-# - https://spotter.steampunk.si/check-catalogue/
-# - https://spotter.steampunk.si/plugin-docs/
+# - Remove the link to the scan result page
+# - Replace ec2-3-130-128-33.us-east-2.compute.amazonaws.com with spotter.steampunk.si
 - name: Process - Save scan result 2 {{ repo.name }}
   ansible.builtin.copy:
     content: >
       {{ _scan_result.stdout
-        | replace(
-          'https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/check-catalogue/',
-          'https://spotter.steampunk.si/check-catalogue/')
-        | replace(
-          'https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/plugin-docs/',
-          'https://spotter.steampunk.si/plugin-docs/')
+        | regex_replace('Visit.+to view this scan result', '')
+        | replace('ec2-3-130-128-33.us-east-2.compute.amazonaws.com','spotter.steampunk.si')
       }}
-    # content: >
-    #   {{ _scan_result.stdout
-    #     | replace(
-    #       'https://ec2-3-130-128-33.us-east-2.compute.amazonaws.com/check-catalogue/',
-    #       'https://spotter.steampunk.si/check-catalogue/')
-    #   }}
     dest: "{{ __extracted_dir }}/{{ repo.name }}/___spotter-report___.txt"
     force: true
     mode: "0444"
