@@ -106,3 +106,67 @@ ansible-playbook playbook.yml --extra-vars "working_dir=$WORKING_DIR csv=$WORKIN
 	- Duplicated repository names in the spreadsheet.
 	- Archives including multiple folders or mismatching names.
 7. Compress the output and send it to the customer.
+
+## Playbook Output
+
+```
+TASK [Summary] *****************************************************************************************************************************************************************************************************
+Pausing for 1 seconds
+(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
+[Summary]
+Processable:
+  - {'uuid': 'I8pLCBHXQz6ioloJF9glHA', 'name': 'apm-agent-versions', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/apm-agent-versions.tar'}
+  - {'uuid': 'bmgG0-OPS26MkUTlcp_55g', 'name': 'apm-dynatrace', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/apm-dynatrace.tar'}
+  - {'uuid': 'GdPnX1EER5ygNQ7EXKWwqA', 'name': 'bld-service-scripts', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/bld-service-scripts.tar'}
+  - {'uuid': 'hlA5x8egQzavUU3K1hchsg', 'name': 'evolven-management-ansible', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/evolven-management-ansible.tar'}
+  - {'uuid': 'V_xCOkV_Q4SrFHU5zqAU0w', 'name': 'syslogng-management-ansible', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/syslogng-management-ansible.tar'}
+  - {'uuid': 'q3a0YZ3rTpa4-iQAXCULlg', 'name': 'syslogng-win-management-ansible', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/syslogng-win-management-ansible.tar'}
+  - {'uuid': '58G3-QTnSW6PqBQYT3uj0w', 'name': 'syslog-windows-ansible', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/syslog-windows-ansible.tar'}
+  - {'uuid': 'vcKoAMcGQQy0u8-Ujw37xw', 'name': 'ad-hoc-playbooks', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/ad-hoc-playbooks.tar'}
+  - {'uuid': '0gms-uKFTd63bCwa_HTwgw', 'name': 'grafana-management-ansible', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/grafana-management-ansible.tar'}
+  - {'uuid': 'MweUYio4QsW4zaHu3RBfJg', 'name': 'pas-jenkins-os-install', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/pas-jenkins-os-install.tar'}
+  - {'uuid': 'PIeRLgd1QDuRRRisr7-jig', 'name': 'pas-linux-ansible', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/pas-linux-ansible.tar'}
+  - {'uuid': 'wtshUrKATkm__hiEJGP3xQ', 'name': 'secrets_broker_deploy', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/secrets_broker_deploy.tar'}
+  - {'uuid': 'UIAshzKSRxiFIxST8VV4kw', 'name': 'xmp-ui-admin', 'archive': '/home/ssidimah/projects/pnc/ansible-sar/out0112/archives/raw/xmp-ui-admin.tar'}
+
+Missing UUID:
+
+Multiple Top Folders in Archive (skip):
+
+Archive Missing:
+  - ans-admin
+  - apm-activegate
+  - apm-artifactory
+  - apm-update-vsm-hosts
+  - bld-bts-rscd-agent
+  - bto-networking
+  - bto-vta-crypto-swat
+  - windows-remediate-path
+  - cxm-raw-awx
+  - dai-ansible-playbooks
+  - dse-ansible-playbooks
+  - win-agent-ansible
+  - armor-deploy
+  - maas-ansible
+  - syslogng-agent-onboard-analysis
+  - moz_deploy
+  - monpo-vm-deploy-api
+  - monpo-vm-deploy-ui
+  - grafana-plugin-management
+  - osx-app-category-automation
+  - osx-postgresql-ansible
+  - pas-postgres-ansible
+  - plato_redis_backup
+  - mud-maas-ansible
+  - vro-ansible
+  - port_check_ansible
+  - bao-vulnerability-remediate_raw
+  - osx-advanced-search
+
+Total: 41 = 13 (processed) + 0 (skipped) + 28 (tarball missing) + 0 (empty uuid)
+:
+ok: [ssidimah-thinkpadp1gen7.rmtusmd.csb]
+
+PLAY RECAP *********************************************************************************************************************************************************************************************************
+ssidimah-thinkpadp1gen7.rmtusmd.csb : ok=248  changed=40   unreachable=0    failed=0    skipped=179  rescued=0    ignored=0   
+```
