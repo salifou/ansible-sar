@@ -2,7 +2,7 @@
 # Process a repo, extract, scan, rewrite, scan and save the result
 
 - name: Process - Extract {{ repo.name }}
-  when: __archive is defined and __archive.matched == 1
+  # when: __archive is defined and __archive.matched == 1
   ansible.builtin.unarchive:
     remote_src: true
     src: "{{ repo.archive }}"
